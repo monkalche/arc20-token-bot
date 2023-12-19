@@ -1,0 +1,16 @@
+{
+  "name": "arc20-bot",
+  "version": "1.0.0",
+  "description": "a bot for arc-20 auto mint/sell",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "tabor holly",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "web3": "^4.3.0"
+  }
+}
