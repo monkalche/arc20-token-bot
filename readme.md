@@ -1,0 +1,1 @@
+![Mock image of site plan](./bot.png)
