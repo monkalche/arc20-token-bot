@@ -1,0 +1,24 @@
+doctype html
+html
+  head
+    title Bot
+    script(src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js")
+    script(src="../scripts/bot.js")
+    link(rel='stylesheet', href='../stylesheets/style.css')
+  body
+    h4 Wallet Address: #{botData.walletAddress}
+    h4 Total Avax in Wallet: #{botData.walletTotalAvax}
+    h4 Percent of Wallet To Use: #{botData.percentToMint}
+    h4 AVAX used per Mint: #{botData.percentToMintFromTotal}
+
+    h4 Current Gas: #{botData.currentGas}
+    h4 Mint Data: #{botData.mintData}
+
+   
+    h4 Gas to start Mint:#{botData.mintGas}
+    h4 Gas to list: #{botData.listGas}
+
+    h4 Time between actions: #{botData.intervalBetweenOperations}
+
+
+   

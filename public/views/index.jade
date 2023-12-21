@@ -1,8 +1,32 @@
-doctype html
-html
-  head
-    title Greetings
-  body
-    h1 Hi there!
+extends metamask
 
- 
+block content
+  h1 Gas: #{gas}
+  div#inputField
+    form(action="/startBot", method="post")
+      // Input for Target Token Address (String input)
+      label(for="mintDataHex") Mint Data Hexadecimal:
+      input(type="text", id="mintDataHex", name="mintDataHex")
+      br
+
+      // Input for Percent of Wallet To Mint (Slider from 1 to 100)
+      h1 Wallet Balance#{balance}
+      label(for="percentToMint") Percent of Wallet To Mint:
+      input(type="range", id="percentToMint", name="percentToMint", value="50", min="1", max="100", oninput="this.nextElementSibling.value = this.value")
+      output 50
+      br
+
+      // Input for Mint Gas (Number input)
+      label(for="mintGas") Mint Gas (Price in GWEI to mint):
+      input(type="number", id="mintGas", name="mintGas")
+      br
+
+      // Input for List Gas (Number input)
+      label(for="listGas") List Gas (Price in GWEI to list):
+      input(type="number", id="listGas", name="listGas")
+      br
+
+      // Start Button
+      label(for="start")
+      br
+      input(type="submit", value="Start Bot", id="start", name="start")
