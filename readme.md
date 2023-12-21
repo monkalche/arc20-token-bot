@@ -9,7 +9,7 @@ There are four inputs that control the bot.
 <li>List Gas: Price in GWEI to list onto the https://avascriptions.com marketplace.</li>
 <ol>
 
-<h3>Below is the initial draft of the design.<h3>
+<h3>Below is the initial draft of the design. Token address field has been replaced with Data Hex.<h3>
 
 
 
@@ -25,6 +25,6 @@ There are four inputs that control the bot.
 
 
 <h1>Requirements<h1>
-To use, you must have Metamask Wallet, or expose your private key in the .env.
+To use, enter your private key in the .env.
 
 You must also fill in an endpoint to retreive local gas prices in the .env.
