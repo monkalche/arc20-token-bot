@@ -5,11 +5,3 @@
     align-items: left;
 }
 
-
-  
-  #walletConnection {
-    background-color: blue;
-    position: absolute;
-    top: 10px; /* Adjust as needed */
-    right: 10px; /* Adjust as needed */
-  }

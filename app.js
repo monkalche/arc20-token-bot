@@ -16,17 +16,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const mintyBot = new MintyBot();
 
-
   
 
 
 
 app.use('/create', async (req, res, next) => {
     try {
-      await mintyBot.checkGas();
-      const currentGas = mintyBot.currentGas;
+      const currentGas = await mintyBot.checkGas();
       const currentBalance = await mintyBot.walletBalance();
-      mintyBot.currentGas = mintyBot.checkGas();
+
 
   
       res.render('index', {
@@ -45,20 +43,27 @@ app.post('/startBot', async (req, res) => {
   
   
   try {
-    const { mintDataHex, percentToMint, mintGas, listGas } = req.body;
-    console.log('Received form data:', { mintDataHex, percentToMint, mintGas, listGas });
+    const { mintDataHex, ticker, percentToMint, mintGas, listGas, maxMintLimit } = req.body;
+    console.log('Received form data:', { mintDataHex, percentToMint, mintGas, listGas, ticker, maxMintLimit});
     // Further processing with received form data
 
 
  
 
-
+    console.log(maxMintLimit)
     
     mintyBot.mintGas = mintGas;
+    mintyBot.ticker = ticker;
     mintyBot.listGas = listGas;
     mintyBot.mintData = mintDataHex; 
-    mintyBot.percentToMint = percentToMint
+    mintyBot.percentToMint = percentToMint;
+    mintyBot.maxMintLimit = maxMintLimit
+    await mintyBot.getMaxTokenAmount();
+    await mintyBot.walletBalance();
     mintyBot.startBot();
+
+ 
+  
 
     // Redirect to a success page or handle response
     res.render('botinfo', {

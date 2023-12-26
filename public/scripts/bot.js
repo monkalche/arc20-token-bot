@@ -1,23 +1,32 @@
 require("dotenv").config();
 const { Web3 } = require("web3");
 
+const axios = require("axios");
+
 //const EventEmitter = require('events');
 
 // Usage:
 const providerUrl = process.env.PROVIDER_URL; // Replace with your Ethereum provider URL
 const walletAddress = process.env.WALLET_ADDRESS; // Replace with your contract address
 const privateKey = process.env.PRIVATE_KEY; // Replace with your private key
+const contractAddress = process.env.CONTRACT_ADDRESS;
+const avascriptionsAPIKey = process.env.AVASCRIPTIONS_API_KEY; // Replace 'YOUR_API_KEY' with your actual API key
 
 class MintyBot {
   constructor() {
     this.web3 = new Web3(providerUrl);
     this.walletAddress = walletAddress;
     this.privateKey = privateKey;
+    this.ticker = "";
+    this.avascriptionsAPI = avascriptionsAPIKey;
+    this.contractAddress = contractAddress;
+    this.tokensMinted = 0;
 
     this.currentGas = 0;
     this.mintGas = 0;
-    this.listGas = 2000;
+    this.listGas = 10000;
     this.mintData = ""; // Placeholder for mint data
+    this.maxMintLimit = 100000000;
 
     this.walletTotalAvax = 0;
     this.percentToMint = 10;
@@ -26,7 +35,8 @@ class MintyBot {
     //this.eventEmitter = new EventEmitter();
 
     this.canBuy = false;
-    this.intervalBetweenOperation = 60000; // Default interval in milliseconds
+    this.intervalBetweenOperation = 30000; // Default interval in milliseconds
+
     console.log("created");
   }
 
@@ -51,6 +61,7 @@ class MintyBot {
         // this.eventEmitter.emit('regularGas', this.currentGas);
         console.log("Gas is in threshold: " + this.currentGas);
       }
+      return gasPriceInGwei;
     } catch (error) {
       console.error("Error fetching gas price:", error);
       this.currentGas = "N/A"; // Handle error by assigning a default value
@@ -64,7 +75,7 @@ class MintyBot {
       const balanceInEther = this.web3.utils.fromWei(balance, "ether");
       console.log("Wallet balance:", balanceInEther);
       this.walletTotalAvax = balanceInEther;
-      this.percentToMintFromTotal = this.percentToMint * balanceInEther;
+      this.percentToMintFromTotal = this.percentToMint * 0.01 * balanceInEther;
       return balanceInEther;
     } catch (error) {
       console.error("Error fetching wallet balance:", error);
@@ -109,9 +120,50 @@ class MintyBot {
     }
   }
 
-  async list(maxTokenAmount, mintData, marketPrice) {
-    // Logic to list tokens
-    // Use this.web3, this.contractAddress, this.privateKey
+  async list(amount) {
+    const inputData =
+      "data:" +
+      JSON.stringify({
+        p: "asc-20",
+        op: "list",
+        tick: this.ticker,
+        amt: amount.toString(),
+      });
+    console.log(inputData);
+    const inputHex = this.web3.utils.utf8ToHex(inputData);
+
+    const block = await this.web3.eth.getBlock("latest");
+
+    const baseFee = block.baseFeePerGas.toString();
+
+    /* web3.eth.accounts
+      .signTransaction(
+        {
+          from: this.walletAddress,
+          to: contractAddress,
+          gas: "500000", // Replace with your desired gas limit
+          gasPrice: baseFee, // Replace with your desired gas price (in wei),
+          value: 0,
+          data: inputHex,
+        },
+        privateKey
+      )
+      .then((signedTx) => {
+        web3.eth
+          .sendSignedTransaction(signedTx.rawTransaction)
+          .on("transactionHash", (hash) => {
+            console.log("Transaction Hash:", hash);
+          })
+          .on("receipt", (receipt) => {
+            console.log("Receipt:", receipt);
+          })
+          .on("error", (error) => {
+            console.error("Error:", error);
+          });
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });*/
   }
 
   async startBot() {
@@ -121,9 +173,29 @@ class MintyBot {
     }, this.intervalBetweenOperation);
   }
 
-  async getMaxTokenAmount(address) {
-    // Logic to get the maximum token amount at an address
-    // Use this.web3 and this.contractAddress
+  async getMaxTokenAmount() {
+    const apiUrl = "https://open-api.avascriptions.com/v1/asc20/balance";
+    const requestData = {
+      address: this.walletAddress,
+      ticker: this.ticker,
+      page: 1,
+      limit: 50,
+    };
+
+    axios
+      .post(apiUrl, requestData, {
+        headers: {
+          Authorization: `Bearer ${this.avascriptionsAPI}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        this.tokensMinted = response.data.data.list[0].amount;
+        console.log("coin bought balance updated to: " + this.tokensMinted);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   }
 
   async getMarketPrice() {
